@@ -1,8 +1,12 @@
-/* ================================
-   CoreSetup Studio – main.js
-   ================================= */
+/* ==========================================================
+   CoreSetup Studio – Ultimate main.js
+========================================================== */
 
-// Jahr im Footer automatisch setzen
+
+/* ================================
+   Footer Year
+================================ */
+
 const year = document.getElementById("year");
 if (year) {
   year.textContent = new Date().getFullYear();
@@ -11,7 +15,7 @@ if (year) {
 
 /* ================================
    Mobile Navigation
-   ================================= */
+================================ */
 
 const menuBtn = document.getElementById("menuBtn");
 const mobileNav = document.getElementById("mobileNav");
@@ -32,8 +36,10 @@ if (menuBtn && mobileNav) {
   mobileNav.querySelectorAll("a").forEach(link => {
 
     link.addEventListener("click", () => {
+
       mobileNav.classList.remove("is-open");
       menuBtn.setAttribute("aria-expanded", "false");
+
     });
 
   });
@@ -42,12 +48,12 @@ if (menuBtn && mobileNav) {
 
 
 /* ================================
-   Reveal Animation on Scroll
-   ================================= */
+   Scroll Reveal Animation
+================================ */
 
 const revealElements = document.querySelectorAll(".reveal");
 
-const observer = new IntersectionObserver((entries) => {
+const revealObserver = new IntersectionObserver((entries) => {
 
   entries.forEach(entry => {
 
@@ -61,30 +67,91 @@ const observer = new IntersectionObserver((entries) => {
   threshold: 0.15
 });
 
-revealElements.forEach(el => observer.observe(el));
+revealElements.forEach(el => revealObserver.observe(el));
 
 
 /* ================================
-   Cursor Spotlight Effekt
-   ================================= */
+   Luxury Cursor
+================================ */
+
+const cursor = document.querySelector(".cursor");
+
+let mouseX = 0;
+let mouseY = 0;
+
+let cursorX = 0;
+let cursorY = 0;
+
+window.addEventListener("mousemove", (e) => {
+
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+
+});
+
+function animateCursor() {
+
+  cursorX += (mouseX - cursorX) * 0.15;
+  cursorY += (mouseY - cursorY) * 0.15;
+
+  if (cursor) {
+
+    cursor.style.left = cursorX + "px";
+    cursor.style.top = cursorY + "px";
+
+  }
+
+  requestAnimationFrame(animateCursor);
+
+}
+
+animateCursor();
+
+
+/* ================================
+   Cursor Hover Effect
+================================ */
+
+const hoverElements = document.querySelectorAll("a,button,.card,.project");
+
+hoverElements.forEach(el => {
+
+  el.addEventListener("mouseenter", () => {
+
+    if (cursor) cursor.classList.add("cursor-grow");
+
+  });
+
+  el.addEventListener("mouseleave", () => {
+
+    if (cursor) cursor.classList.remove("cursor-grow");
+
+  });
+
+});
+
+
+/* ================================
+   Spotlight Background
+================================ */
 
 const spotlight = document.querySelector(".spotlight");
 
-let mouseX = window.innerWidth * 0.5;
-let mouseY = window.innerHeight * 0.3;
+let spotX = window.innerWidth * 0.5;
+let spotY = window.innerHeight * 0.3;
 
-let targetX = mouseX;
-let targetY = mouseY;
+let targetX = spotX;
+let targetY = spotY;
 
 function animateSpotlight() {
 
-  mouseX += (targetX - mouseX) * 0.08;
-  mouseY += (targetY - mouseY) * 0.08;
+  spotX += (targetX - spotX) * 0.08;
+  spotY += (targetY - spotY) * 0.08;
 
   if (spotlight) {
 
-    spotlight.style.left = mouseX + "px";
-    spotlight.style.top = mouseY + "px";
+    spotlight.style.left = spotX + "px";
+    spotlight.style.top = spotY + "px";
 
   }
 
@@ -103,8 +170,73 @@ window.addEventListener("pointermove", (e) => {
 
 
 /* ================================
+   Smooth Anchor Scroll
+================================ */
+
+const anchorLinks = document.querySelectorAll('a[href^="#"]');
+
+anchorLinks.forEach(link => {
+
+  link.addEventListener("click", (e) => {
+
+    const targetID = link.getAttribute("href");
+
+    if (targetID.length > 1) {
+
+      const target = document.querySelector(targetID);
+
+      if (target) {
+
+        e.preventDefault();
+
+        window.scrollTo({
+          top: target.offsetTop - 80,
+          behavior: "smooth"
+        });
+
+      }
+
+    }
+
+  });
+
+});
+
+
+/* ================================
+   Scroll Progress Bar
+================================ */
+
+const progressBar = document.createElement("div");
+
+progressBar.style.position = "fixed";
+progressBar.style.top = "0";
+progressBar.style.left = "0";
+progressBar.style.height = "3px";
+progressBar.style.width = "0%";
+progressBar.style.zIndex = "9999";
+progressBar.style.background = "linear-gradient(90deg,#b59b5b,#d6c089)";
+
+document.body.appendChild(progressBar);
+
+window.addEventListener("scroll", () => {
+
+  const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+
+  const scrollHeight =
+    document.documentElement.scrollHeight -
+    document.documentElement.clientHeight;
+
+  const progress = (scrollTop / scrollHeight) * 100;
+
+  progressBar.style.width = progress + "%";
+
+});
+
+
+/* ================================
    WebGL Background
-   ================================= */
+================================ */
 
 const canvas = document.getElementById("bg-webgl");
 
@@ -113,7 +245,7 @@ if (canvas) {
   const gl = canvas.getContext("webgl");
 
   if (!gl) {
-    console.log("WebGL nicht verfügbar");
+    console.warn("WebGL not supported");
   }
 
   const vertexShaderSource = `
@@ -135,50 +267,58 @@ if (canvas) {
   uniform vec2 resolution;
 
   float random(vec2 st){
-      return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+      return fract(sin(dot(st.xy,vec2(12.9898,78.233)))*43758.5453123);
   }
 
   float noise(vec2 st){
+
       vec2 i = floor(st);
       vec2 f = fract(st);
 
       float a = random(i);
-      float b = random(i + vec2(1.0, 0.0));
-      float c = random(i + vec2(0.0, 1.0));
-      float d = random(i + vec2(1.0, 1.0));
+      float b = random(i + vec2(1.0,0.0));
+      float c = random(i + vec2(0.0,1.0));
+      float d = random(i + vec2(1.0,1.0));
 
       vec2 u = f*f*(3.0-2.0*f);
 
-      return mix(a, b, u.x)
-           + (c - a)* u.y * (1.0 - u.x)
-           + (d - b)* u.x * u.y;
+      return mix(a,b,u.x)
+      + (c-a)*u.y*(1.0-u.x)
+      + (d-b)*u.x*u.y;
+
   }
 
-  void main() {
+  void main(){
 
       vec2 uv = vUv;
-      vec2 p = (uv - 0.5) * vec2(resolution.x/resolution.y,1.0);
 
-      float t = time * 0.05;
+      vec2 p =
+      (uv-0.5)*
+      vec2(resolution.x/resolution.y,1.0);
+
+      float t = time*0.05;
 
       float n = noise(p*2.0 + t);
 
       vec3 base = vec3(0.03,0.03,0.035);
-
       vec3 gold = vec3(0.71,0.61,0.36);
 
-      float glow = smoothstep(0.4,0.9,n);
+      float glow =
+      smoothstep(0.4,0.9,n);
 
-      vec3 color = base + gold * glow * 0.08;
+      vec3 color =
+      base + gold * glow * 0.08;
 
-      gl_FragColor = vec4(color,1.0);
+      gl_FragColor =
+      vec4(color,1.0);
+
   }
   `;
-
 
   function compileShader(type, source) {
 
     const shader = gl.createShader(type);
+
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
 
@@ -186,6 +326,7 @@ if (canvas) {
 
       console.error(gl.getShaderInfoLog(shader));
       gl.deleteShader(shader);
+
       return null;
 
     }
@@ -194,9 +335,10 @@ if (canvas) {
 
   }
 
-
   const vertexShader = compileShader(gl.VERTEX_SHADER, vertexShaderSource);
   const fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+  if (!vertexShader || !fragmentShader) return;
 
   const program = gl.createProgram();
 
@@ -207,36 +349,29 @@ if (canvas) {
 
   gl.useProgram(program);
 
-
   const vertices = new Float32Array([
     -1,-1,
      1,-1,
-    -1, 1,
-
-    -1, 1,
+    -1,1,
+    -1,1,
      1,-1,
-     1, 1
+     1,1
   ]);
-
 
   const buffer = gl.createBuffer();
 
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
-
   const position = gl.getAttribLocation(program, "position");
 
   gl.enableVertexAttribArray(position);
-
   gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);
-
 
   const timeLocation = gl.getUniformLocation(program,"time");
   const resolutionLocation = gl.getUniformLocation(program,"resolution");
 
-
-  function resizeCanvas() {
+  function resizeCanvas(){
 
     const dpr = Math.min(window.devicePixelRatio,2);
 
@@ -256,12 +391,11 @@ if (canvas) {
 
   resizeCanvas();
 
-
   let start = performance.now();
 
-  function render(now) {
+  function render(now){
 
-    const time = (now - start) * 0.001;
+    const time = (now-start)*0.001;
 
     gl.uniform1f(timeLocation,time);
 
