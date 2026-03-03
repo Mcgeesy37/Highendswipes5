@@ -447,3 +447,46 @@ img{ max-width:100%; display:block; }
   html{ scroll-behavior:auto; }
   .reveal{ transition:none; }
 }
+/* =========================
+   Luxury Cursor
+========================= */
+
+body {
+cursor: none;
+}
+
+.cursor {
+
+position: fixed;
+width: 18px;
+height: 18px;
+
+border-radius: 50%;
+
+background: rgba(255,255,255,0.9);
+
+mix-blend-mode: difference;
+
+pointer-events: none;
+
+transform: translate(-50%, -50%);
+
+z-index: 9999;
+
+transition:
+width 0.25s ease,
+height 0.25s ease,
+background 0.25s ease;
+
+}
+
+.cursor-grow {
+
+width: 60px;
+height: 60px;
+
+background: rgba(181,155,91,0.25);
+
+backdrop-filter: blur(4px);
+
+}
